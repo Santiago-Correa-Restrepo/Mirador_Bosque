@@ -1,0 +1,489 @@
+﻿@model NovenaPrueba.Models.Reserva
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Crear Reserva";
+}
+
+
+
+<h1>Create</h1>
+
+<h4>Reserva</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            @* ------------------------------------ BUSCAR CLIENTE ----------------------------------*@
+
+            <div class="mb-3">
+                <label for="Documento" class="form-label">Documento del Cliente:</label>
+                <input type="text" class="form-control" id="Documento" name="Documento" placeholder="Ingrese el documento del cliente" required />
+                <div id="documentoFeedback" class="form-text text-danger"></div>
+            </div>
+
+            <!-- Mostrar información del cliente -->
+            <div id="clienteInfo" class="d-none">
+                <div class="mb-3">
+                    <label for="Nombre" class="form-label">Nombre:</label>
+                    <input type="text" class="form-control" id="Nombre" readonly />
+                </div>
+                <div class="mb-3">
+                    <label for="Apellido" class="form-label">Apellido:</label>
+                    <input type="text" class="form-control" id="Apellido" readonly />
+                </div>
+                <div class="mb-3">
+                    <label for="Correo" class="form-label">Correo:</label>
+                    <input type="email" class="form-control" id="Correo" readonly />
+                </div>
+                <div class="mb-3">
+                    <label for="Celular" class="form-label">Celular:</label>
+                    <input type="text" class="form-control" id="Celular" readonly />
+                </div>
+                <div class="mb-3">
+                    <label for="TipoDocumento" class="form-label">Tipo de Documento:</label>
+                    <input type="text" class="form-control" id="TipoDocumento" readonly />
+                </div>
+            </div>
+
+
+            @* ------------------------------------------- paquetes ------------------------------------*@
+
+            <div class="mb-3">
+                <label for="Paquete" class="form-label">Seleccionar Paquete:</label>
+                <select class="form-control" id="Paquete" name="Paquete">
+                    <option value="">Seleccionar Paquete</option>
+                    <!-- Aquí se llenarán los paquetes con AJAX -->
+                </select>
+            </div>
+
+            <!-- Tabla para mostrar los paquetes seleccionados -->
+            <h3>Paquetes Seleccionados</h3>
+            <table class="table table-bordered" id="paquetesSeleccionadosTable">
+                <thead>
+                    <tr>
+                        <th>Habitacion</th>
+                        <th>Precio</th>
+                        <th>cantidad</th>
+                        <th>Total</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="paquetesSeleccionadosBody">
+                    <!-- Los paquetes seleccionados se agregarán aquí -->
+                </tbody>
+            </table>
+
+            <div class="mb-3">
+                <label for="Servicio" class="form-label">Seleccionar Servicio:</label>
+                <select class="form-control" id="Servicio" name="Servicio">
+                    <option value="">Seleccionar Servicio</option>
+                    <!-- Aquí se llenarán los servicios con AJAX -->
+                </select>
+            </div>
+
+            <!-- Tabla para mostrar los servicios seleccionados -->
+            <h3>Servicios Seleccionados</h3>
+            <table class="table table-bordered" id="serviciosSeleccionadosTable">
+                <thead>
+                    <tr>
+                        <th>Servicio</th>
+                        <th>Costo</th>
+                        <th>Cantidad</th>
+                        <th>Total</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="serviciosSeleccionadosBody">
+                    <!-- Los servicios seleccionados se agregarán aquí -->
+                </tbody>
+            </table>
+           
+            <div class="mb-3">
+                <label for="FechaHoraInicio" class="form-label">Fecha y Hora de Inicio:</label>
+                <input type="datetime-local" class="form-control" id="FechaHoraInicio" name="FechaHoraInicio" required />
+            </div>
+
+            <div class="mb-3">
+                <label for="FechaHoraFin" class="form-label">Fecha y Hora de Finalización:</label>
+                <input type="datetime-local" class="form-control" id="FechaHoraFin" name="FechaHoraFin" required />
+            </div> 
+            <!-- Campos para mostrar los totales -->
+            <div class="form-group">
+                <label for="Subtotal">Subtotal</label>
+                <p id="Subtotal">0.00</p>  <!-- Este campo se actualizará automáticamente -->
+            </div>
+
+            <div class="form-group">
+                <label for="IVA">IVA</label>
+                <p id="IVA">0.00</p>  <!-- Este campo se actualizará automáticamente -->
+            </div>
+
+            <div class="form-group">
+                <label for="MontoTotal">Monto Total</label>
+                <p id="MontoTotal">0.00</p>  <!-- Este campo se actualizará automáticamente -->
+            </div>
+
+            <div class="form-group">
+                <label for="Descuento">Descuento (%)</label>
+                <input type="number" id="Descuento" name="Descuento" value="0" min="0" class="form-control">
+            </div>
+
+           
+            <div class="form-group">
+                <label asp-for="MetodoPago" class="control-label"></label>
+                <select asp-for="MetodoPago" class ="form-control" asp-items="ViewBag.MetodoPago"></select>
+            </div> 
+            <div class="form-group">
+                <label asp-for="NroPersonas" class="control-label"></label>
+                <input asp-for="NroPersonas" class="form-control" />
+                <span asp-validation-for="NroPersonas" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IdEstadoReserva" class="control-label"></label>
+                <select asp-for="IdEstadoReserva" class ="form-control" asp-items="ViewBag.IdEstadoReserva"></select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+
+            
+        </form>
+    </div>
+</div>
+
+<div id="loadingSpinner" class="d-none text-center mt-3">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+   
+
+    <script>
+        $(document).ready(function () {
+            $('#Documento').on('change', function () {
+                var documento = $(this).val();
+                $('#clienteInfo').addClass('d-none');
+                $('#documentoFeedback').text('');
+                if (documento) {
+                    $('#loadingSpinner').removeClass('d-none'); // Mostrar el spinner de carga
+
+                    $.ajax({
+                        url: '@Url.Action("ObtenerClientePorDocumento")',
+                        type: 'GET',
+                        data: { documento: documento },
+                        success: function (response) {
+                            $('#loadingSpinner').addClass('d-none'); // Ocultar el spinner
+                            if (response.existe) {
+                                $('#Nombre').val(response.cliente.nombres);
+                                $('#Apellido').val(response.cliente.apellidos);
+                                $('#Correo').val(response.cliente.correo);
+                                $('#Celular').val(response.cliente.celular);
+                                $('#TipoDocumento').val(response.cliente.tipoDocumento);
+                                $('#clienteInfo').removeClass('d-none');
+                            } else {
+                                $('#documentoFeedback').text(response.mensaje);
+                                $('#Nombre, #Apellido, #Correo, #Celular, #TipoDocumento').val('');
+                            }
+                        },
+                        error: function () {
+                            $('#loadingSpinner').addClass('d-none'); // Ocultar el spinner
+                            $('#documentoFeedback').text("Error al obtener los datos del cliente.");
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
+
+     <script>
+        $('form').submit(function (event) {
+            // Obtener los IDs de paquetes y servicios seleccionados
+            var paqueteIds = $('#paqueteIds').val();
+            var servicioIds = $('#servicioIds').val();
+
+            // Adjuntar los datos al formulario antes de enviarlo
+            $('<input>').attr({ type: 'hidden', name: 'paqueteIds', value: paqueteIds.join(',') }).appendTo('form');
+            $('<input>').attr({ type: 'hidden', name: 'servicioIds', value: servicioIds.join(',') }).appendTo('form');
+        });
+    </script>  
+
+    
+    
+    <script>
+        $(document).ready(function () {
+            var paquetesSeleccionados = {};
+            var serviciosSeleccionados = {};
+
+            // Obtener los paquetes disponibles cuando la página cargue
+            $.ajax({
+                url: '@Url.Action("ObtenerPaquetes", "Reservas")',
+                type: 'GET',
+                success: function (response) {
+                    var paquetesSelect = $('#Paquete');
+                    response.paquetes.forEach(function (paquete) {
+                        paquetesSelect.append($('<option>', {
+                            value: paquete.id,
+                            text: paquete.nombrepaquete
+                        }));
+                    });
+                }
+            });
+
+            // Obtener los servicios disponibles cuando la página cargue
+            $.ajax({
+                url: '@Url.Action("ObtenerServicios", "Reservas")',
+                type: 'GET',
+                success: function (response) {
+                    var serviciosSelect = $('#Servicio');
+                    response.servicios.forEach(function (servicio) {
+                        serviciosSelect.append($('<option>', {
+                            value: servicio.id,
+                            text: servicio.nombreservicio
+                        }));
+                    });
+                }
+            });
+
+            // Al seleccionar un paquete, añadirlo o actualizar su cantidad
+            $('#Paquete').on('change', function () {
+                var paqueteId = $(this).val();
+                if (paqueteId) {
+                    $.ajax({
+                        url: '@Url.Action("ObtenerDetallesPaquete", "Reservas")',
+                        type: 'GET',
+                        data: { id: paqueteId },
+                        success: function (response) {
+                            if (response.success) {
+                                var paquete = response.paquete;
+                                if (!paquetesSeleccionados[paqueteId]) {
+                                    paquetesSeleccionados[paqueteId] = {
+                                        nombre: paquete.nombre,
+                                        precio: paquete.precio,
+                                        cantidad: 1
+                                    };
+                                } else {
+                                    paquetesSeleccionados[paqueteId].cantidad += 1;
+                                }
+
+                                actualizarTablaPaquetes();
+                                actualizarTotales();
+                                $('#Paquete').val('');
+                            } else {
+                                alert('No se pudo obtener los detalles del paquete.');
+                            }
+                        }
+                    });
+                }
+            });
+
+            // Al seleccionar un servicio, añadirlo o actualizar su cantidad
+            $('#Servicio').on('change', function () {
+                var servicioId = $(this).val();
+                if (servicioId) {
+                    $.ajax({
+                        url: '@Url.Action("ObtenerDetallesServicio", "Reservas")',
+                        type: 'GET',
+                        data: { id: servicioId },
+                        success: function (response) {
+                            if (response.success) {
+                                var servicio = response.servicio;
+                                if (!serviciosSeleccionados[servicioId]) {
+                                    serviciosSeleccionados[servicioId] = {
+                                        nombre: servicio.nombre,
+                                        precio: servicio.precio,
+                                        cantidad: 1
+                                    };
+                                } else {
+                                    serviciosSeleccionados[servicioId].cantidad += 1;
+                                }
+
+                                actualizarTablaServicios();
+                                actualizarTotales();
+                                $('#Servicio').val('');
+                            } else {
+                                alert('No se pudo obtener los detalles del servicio.');
+                            }
+                        }
+                    });
+                }
+            });
+
+            // Función para actualizar la tabla de paquetes seleccionados
+            function actualizarTablaPaquetes() {
+                var paquetesTableBody = $('#paquetesSeleccionadosBody');
+                paquetesTableBody.empty();
+
+                $.each(paquetesSeleccionados, function (id, paquete) {
+                    var subtotal = paquete.precio * paquete.cantidad;
+                    var row = $('<tr data-paquete-id="' + id + '">');
+                    row.append($('<td>').text(paquete.nombre));
+                    row.append($('<td>').text(paquete.precio));
+                    row.append($('<td>').html('<input type="number" class="form-control cantidad-paquete" value="' + paquete.cantidad + '" min="1">'));
+                    row.append($('<td>').text(subtotal.toFixed(2)));
+                    row.append($('<td>').html('<button class="btn btn-danger btn-eliminar-paquete">Eliminar</button>'));
+
+                    paquetesTableBody.append(row);
+                });
+            }
+
+            // Función para actualizar la tabla de servicios seleccionados
+            function actualizarTablaServicios() {
+                var serviciosTableBody = $('#serviciosSeleccionadosBody');
+                serviciosTableBody.empty();
+
+                $.each(serviciosSeleccionados, function (id, servicio) {
+                    var subtotal = servicio.precio * servicio.cantidad;
+                    var row = $('<tr data-servicio-id="' + id + '">');
+                    row.append($('<td>').text(servicio.nombre));
+                    row.append($('<td>').text(servicio.precio));
+                    row.append($('<td>').html('<input type="number" class="form-control cantidad-servicio" value="' + servicio.cantidad + '" min="1">'));
+                    row.append($('<td>').text(subtotal.toFixed(2)));
+                    row.append($('<td>').html('<button class="btn btn-danger btn-eliminar-servicio">Eliminar</button>'));
+
+                    serviciosTableBody.append(row);
+                });
+            }
+
+            // Función para actualizar los totales
+            function actualizarTotales() {
+                var subtotal = 0;
+                var ivaPercentage = 0.19;
+                var descuento = parseFloat($('#Descuento').val()) || 0;
+
+                // Sumar el costo de los paquetes
+                $.each(paquetesSeleccionados, function (id, paquete) {
+                    subtotal += paquete.precio * paquete.cantidad;
+                });
+
+                // Sumar el costo de los servicios
+                $.each(serviciosSeleccionados, function (id, servicio) {
+                    subtotal += servicio.precio * servicio.cantidad;
+                });
+
+                // Calcular IVA y monto total
+                var iva = subtotal * ivaPercentage;
+                var montoTotal = subtotal + iva - (subtotal * (descuento / 100));
+
+                // Actualizar los campos en la interfaz
+                $('#Subtotal').text(subtotal.toFixed(2));
+                $('#IVA').text(iva.toFixed(2));
+                $('#MontoTotal').text(montoTotal.toFixed(2));
+            }
+
+            // Cambiar cantidad de paquete
+            $('#paquetesSeleccionadosTable').on('change', '.cantidad-paquete', function () {
+                var paqueteId = $(this).closest('tr').data('paquete-id');
+                var nuevaCantidad = parseInt($(this).val(), 10);
+                if (nuevaCantidad > 0) {
+                    paquetesSeleccionados[paqueteId].cantidad = nuevaCantidad;
+                    actualizarTablaPaquetes();
+                    actualizarTotales();
+                }
+            });
+
+            // Cambiar cantidad de servicio
+            $('#serviciosSeleccionadosTable').on('change', '.cantidad-servicio', function () {
+                var servicioId = $(this).closest('tr').data('servicio-id');
+                var nuevaCantidad = parseInt($(this).val(), 10);
+                if (nuevaCantidad > 0) {
+                    serviciosSeleccionados[servicioId].cantidad = nuevaCantidad;
+                    actualizarTablaServicios();
+                    actualizarTotales();
+                }
+            });
+
+            // Eliminar paquete
+            $('#paquetesSeleccionadosTable').on('click', '.btn-eliminar-paquete', function () {
+                var paqueteId = $(this).closest('tr').data('paquete-id');
+                delete paquetesSeleccionados[paqueteId];
+                actualizarTablaPaquetes();
+                actualizarTotales();
+            });
+
+            // Eliminar servicio
+            $('#serviciosSeleccionadosTable').on('click', '.btn-eliminar-servicio', function () {
+                var servicioId = $(this).closest('tr').data('servicio-id');
+                delete serviciosSeleccionados[servicioId];
+                actualizarTablaServicios();
+                actualizarTotales();
+            });
+
+            // Actualizar los totales cuando el descuento cambie
+            $('#Descuento').on('input', function () {
+                actualizarTotales();
+            });
+
+            // Antes de enviar el formulario, recopilar los paquetes y servicios seleccionados
+            $('form').submit(function (event) {
+                var paqueteIds = Object.keys(paquetesSeleccionados).map(function (id) {
+                    return {
+                        IdPaquete: id,
+                        cantidad: paquetesSeleccionados[id].cantidad
+                    };
+                });
+                var servicioIds = Object.keys(serviciosSeleccionados).map(function (id) {
+                    return {
+                        IdServicio: id,
+                        cantidad: serviciosSeleccionados[id].cantidad
+                    };
+                });
+
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: 'paqueteSeleccionados',
+                    value: JSON.stringify(paqueteIds)
+                }).appendTo('form');
+
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: 'serviciosSeleccionados',
+                    value: JSON.stringify(servicioIds)
+                }).appendTo('form');
+            });
+        });
+    </script>
+
+  
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var fechaHoy = new Date();
+
+            // Formatear la fecha y hora actual para 'datetime-local'
+            var año = fechaHoy.getFullYear();
+            var mes = String(fechaHoy.getMonth() + 1).padStart(2, '0');
+            var dia = String(fechaHoy.getDate()).padStart(2, '0');
+            var horas = String(fechaHoy.getHours()).padStart(2, '0');
+            var minutos = String(fechaHoy.getMinutes()).padStart(2, '0');
+            var fechaHoraMinima = `${año}-${mes}-${dia}T${horas}:${minutos}`;
+
+            // Establecer la fecha mínima para FechaHoraInicio
+            var fechaInicioInput = document.getElementById("FechaHoraInicio");
+            fechaInicioInput.setAttribute("min", fechaHoraMinima);
+
+            // Actualizar la fecha mínima para FechaHoraFin en función de FechaHoraInicio
+            var fechaFinInput = document.getElementById("FechaHoraFin");
+
+            fechaInicioInput.addEventListener("change", function () {
+                // Al cambiar la fecha de inicio, establecer el mínimo para la fecha de finalización
+                fechaFinInput.setAttribute("min", fechaInicioInput.value);
+            });
+
+            // Establecer la fecha mínima inicial para FechaHoraFin al cargar la página
+            fechaFinInput.setAttribute("min", fechaHoraMinima);
+        });
+    </script> 
+}
